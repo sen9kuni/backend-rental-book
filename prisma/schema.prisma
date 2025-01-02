@@ -21,11 +21,38 @@ model User {
   avatar   String?
 
   sessions Session[]
+  rentals  Rental[]
+  books    Book[]    @relation("UserBooks")
 }
 
 model Session {
-  id String @id @default(cuid())
-
+  id     String @id @default(cuid())
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model Book {
+  id             String    @id @default(cuid())
+  title          String
+  author         String
+  description    String?
+  imageUrl       String?
+  publishedAt    DateTime?
+  totalStock     Int       @default(0)
+  availableStock Int       @default(0)
+  lastUpdatedAt  DateTime  @default(now()) @updatedAt
+  lastUpdatedBy  String
+  userWhoUpdated User      @relation("UserBooks", fields: [lastUpdatedBy], references: [id])
+
+  rentals Rental[]
+}
+
+model Rental {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  bookId     String
+  book       Book      @relation(fields: [bookId], references: [id])
+  rentedAt   DateTime  @default(now())
+  returnedAt DateTime?
 }
