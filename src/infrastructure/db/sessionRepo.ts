@@ -1,4 +1,4 @@
-import { Prisma, type PrismaClient, type Session } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import type { ISession } from "../entity/interface";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../entity/types";
