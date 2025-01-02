@@ -73,7 +73,7 @@ export class UserRepository implements IUser {
 
 	async update(userId: string, data: UpdateUser) {
 		try {
-			const updatedUser = this.prisma.user.update({
+			const updatedUser = await this.prisma.user.update({
 				where: {
 					id: userId,
 				},
