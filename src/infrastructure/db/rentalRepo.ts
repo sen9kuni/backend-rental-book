@@ -1,49 +1,26 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
-import type {
-	CreateBook,
-	DataBook,
-	IBook,
-	UpdateBook,
-} from "../entity/interface";
+import type { CreateRental, IRental, UpdateRental } from "../entity/interface";
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../entity/types";
 import { DBError } from "../entity/errors";
 
 @injectable()
-export class BookRepository implements IBook {
+export class RentalRepository implements IRental {
 	private prisma: PrismaClient;
 
 	constructor(@inject(TYPES.prisma) prisma: PrismaClient) {
 		this.prisma = prisma;
 	}
 
-	async getAll(search?: string) {
+	async getAll(userId: string) {
 		try {
-			let books: DataBook[] = [];
-			if (!search || search.trim() === "") {
-				books = await this.prisma.book.findMany();
-			} else {
-				books = await this.prisma.book.findMany({
-					where: {
-						OR: [
-							{
-								title: {
-									contains: search.toLowerCase(), // Case-insensitive search by title
-									// mode: 'insensitive', //! Makes the search case-insensitive, active it when move to postgresql
-								},
-							},
-							{
-								author: {
-									contains: search.toLowerCase(), // Case-insensitive search by author
-									// mode: 'insensitive', //! Makes the search case-insensitive, active it when move to postgresql
-								},
-							},
-						],
-					},
-				});
-			}
-			return books;
+			const resntals = await this.prisma.rental.findMany({
+				where: {
+					userId,
+				},
+			});
+			return resntals;
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientRustPanicError) {
 				throw new DBError("error getting source from DB");
@@ -53,18 +30,19 @@ export class BookRepository implements IBook {
 		}
 	}
 
-	async getOne(bookId: string) {
+	async getOne(rentalId: string) {
 		try {
-			const book = await this.prisma.book.findUnique({
+			const rental = await this.prisma.rental.findUnique({
 				where: {
-					id: bookId,
+					id: rentalId,
 				},
 			});
-			if (!book) {
+
+			if (!rental) {
 				return null;
 			}
 
-			return book;
+			return rental;
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientRustPanicError) {
 				throw new DBError("error getting source from DB");
@@ -74,13 +52,13 @@ export class BookRepository implements IBook {
 		}
 	}
 
-	async create(data: CreateBook) {
+	async create(data: CreateRental) {
 		try {
-			const newBook = await this.prisma.book.create({
+			const newRental = await this.prisma.rental.create({
 				data,
 			});
 
-			return newBook;
+			return newRental;
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientRustPanicError) {
 				throw new DBError("error getting source from DB");
@@ -90,16 +68,16 @@ export class BookRepository implements IBook {
 		}
 	}
 
-	async update(bookId: string, data: UpdateBook) {
+	async update(rentalId: string, data: UpdateRental) {
 		try {
-			const updatedBook = await this.prisma.book.update({
+			const updatedRental = await this.prisma.rental.update({
 				where: {
-					id: bookId,
+					id: rentalId,
 				},
 				data,
 			});
 
-			return updatedBook;
+			return updatedRental;
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientRustPanicError) {
 				throw new DBError("error getting source from DB");
@@ -109,11 +87,11 @@ export class BookRepository implements IBook {
 		}
 	}
 
-	async delete(bookId: string) {
+	async delete(rentalId: string) {
 		try {
 			await this.prisma.book.delete({
 				where: {
-					id: bookId,
+					id: rentalId,
 				},
 			});
 		} catch (error) {

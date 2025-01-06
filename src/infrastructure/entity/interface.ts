@@ -6,7 +6,7 @@ import type { Session, User, Book, Rental } from "@prisma/client";
 
 export type CreateUser = Omit<User, "id">;
 export type UpdateUser = Partial<User>;
-export type CreateBook = Omit<Book, "id">;
+export type CreateBook = Omit<Book, "id" | "lastUpdatedAt">;
 export type UpdateBook = Partial<Book>;
 export type CreateRental = Omit<Rental, "id">;
 export type UpdateRental = Partial<Rental>;
@@ -36,7 +36,7 @@ export interface IBook {
 
 export interface IRental {
 	getAll: (userId: string) => Promise<Rental[]>;
-	getOne: (id: string) => Promise<Rental>;
+	getOne: (id: string) => Promise<Rental | null>;
 	create: (data: CreateRental) => Promise<Rental>;
 	update: (id: string, data: UpdateRental) => Promise<Rental>;
 	delete: (id: string) => Promise<void>;

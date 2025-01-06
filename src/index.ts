@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { authRouter } from "./presentation/router/authRouter";
+import { bookRouter } from "./presentation/router/bookRouter";
 import swagger from "@elysiajs/swagger";
 import cors from "@elysiajs/cors";
 
@@ -11,7 +12,7 @@ const app = new Elysia()
 			path: "/docs",
 		}),
 	)
-	.group("/api", (app) => app.use(authRouter))
+	.group("/api", (app) => app.use(authRouter).use(bookRouter))
 	.listen(3000);
 
 console.log(
